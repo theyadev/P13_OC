@@ -18,21 +18,23 @@ jobs:
           name: "Lint"
           command: "flake8" 
   dockerize:
+    working_directory: ./
     docker:
-      - image: theya/cci-demo-docker-primary:0.0.1
+      - image: docker:17.05.0-ce-git
     steps:
       - checkout
+      - setup_remote_docker
       - run:
           name: "Build"
-          command: "docker build . --cache-from=app -t app"
+          command: "docker build . --cache-from=cci-demo-docker-primary -t cci-demo-docker-primary"
       - deploy:
           name: "Push application Docker image"
           command: |
             if [ "${CIRCLE_BRANCH}" == "master" ]; then
               login="$(aws ecr get-login)"
               ${login}
-              docker tag app "${ECR_ENDPOINT}/app:${CIRCLE_SHA1}"
-              docker push "${ECR_ENDPOINT}/app:${CIRCLE_SHA1}"
+              docker tag cci-demo-docker-primary "${ECR_ENDPOINT}/cci-demo-docker-primary:${CIRCLE_SHA1}"
+              docker push "${ECR_ENDPOINT}/cci-demo-docker-primary:${CIRCLE_SHA1}"
             fi
 
 workflows:
