@@ -1,9 +1,9 @@
 version: 2.1
 
 executors:
- docker-publisher: 
+  docker-publisher:
     environment:
-        IMAGE_NAME: theya/cci-demo-docker-primary
+      IMAGE_NAME: theya/cci-demo-docker-primary
 
 jobs:
   test:
@@ -21,7 +21,7 @@ jobs:
       - checkout
       - run:
           name: "Lint"
-          command: "flake8" 
+          command: "flake8"
   dockerize:
     executor: docker-publisher
     docker:
@@ -31,7 +31,7 @@ jobs:
       - setup_remote_docker
       - run:
           name: "Test"
-          command: echo "$DOCKERHUB_PASSWORD" & echo "$DOCKERHUB_USERNAME"
+          command: echo $DOCKERHUB_PASSWORD & echo $DOCKERHUB_USERNAME
       - run:
           name: "Build"
           command: "docker build . -t $IMAGE_NAME"
@@ -39,7 +39,7 @@ jobs:
           name: "Push application Docker image"
           command: |
             if [ "${CIRCLE_BRANCH}" == "tests" ]; then
-              echo "$DOCKERHUB_PASSWORD" | docker login -u "$DOCKERHUB_USERNAME" —-password-stdin
+              echo $DOCKERHUB_PASSWORD | docker login -u $DOCKERHUB_USERNAME —-password-stdin
               docker tag $IMAGE_NAME "${ECR_ENDPOINT}/cci-demo-docker-primary:${CIRCLE_SHA1}"
               docker push "${ECR_ENDPOINT}/cci-demo-docker-primary:${CIRCLE_SHA1}"
             fi
@@ -49,4 +49,5 @@ workflows:
     jobs:
       - lint
       - test
-      - dockerize
+      - dockerize:
+          context: Openclassrooms
