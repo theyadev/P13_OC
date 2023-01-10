@@ -30,9 +30,6 @@ jobs:
       - checkout
       - setup_remote_docker
       - run:
-          name: "Test"
-          command: echo $DOCKERHUB_PASSWORD & echo $DOCKERHUB_USERNAME
-      - run:
           name: "Build"
           command: "docker build . -t $IMAGE_NAME"
       - deploy:
@@ -40,8 +37,8 @@ jobs:
           command: |
             if [ "${CIRCLE_BRANCH}" == "tests" ]; then
               echo $DOCKERHUB_PASSWORD | docker login -u $DOCKERHUB_USERNAME --password-stdin
-              docker tag $IMAGE_NAME "${ECR_ENDPOINT}/cci-demo-docker-primary:${CIRCLE_SHA1}"
-              docker push "${ECR_ENDPOINT}/cci-demo-docker-primary:${CIRCLE_SHA1}"
+              docker tag $IMAGE_NAME "${IMAGE_NAME}:${CIRCLE_SHA1}"
+              docker push "${IMAGE_NAME}:${CIRCLE_SHA1}"
             fi
 
 workflows:
