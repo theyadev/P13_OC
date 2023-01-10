@@ -6,23 +6,7 @@ executors:
       IMAGE_NAME: theya/cci-demo-docker-primary
 
 jobs:
-  test:
-    docker:
-      - image: "theya/cci-demo-docker-primary:${CIRCLE_SHA1}"
-    steps:
-      - checkout
-      - run:
-          name: "Tests"
-          command: "python manage.py test"
-  lint:
-    docker:
-      - image: "theya/cci-demo-docker-primary:${CIRCLE_SHA1}"
-    steps:
-      - checkout
-      - run:
-          name: "Lint"
-          command: "flake8"
-  dockerize:
+  main:
     executor: docker-publisher
     docker:
       - image: circleci/node:latest
@@ -32,6 +16,12 @@ jobs:
       - run:
           name: "Build"
           command: "docker build . -t $IMAGE_NAME"
+      - run:
+          name: "Lint"
+          command: "flake8"
+      - run:
+          name: "Tests"
+          command: "python manage.py test"
       - deploy:
           name: "Push application Docker image"
           command: |
@@ -44,7 +34,5 @@ jobs:
 workflows:
   workflow:
     jobs:
-      - lint
-      - test
-      - dockerize:
+      - main:
           context: Openclassrooms
