@@ -1,0 +1,25 @@
+version: 2.1
+
+jobs:
+  test:
+    docker:
+      - image: theya/cci-demo-docker-primary:0.0.1
+    steps:
+      - checkout
+      - run:
+          name: "Tests"
+          command: "python manage.py test"
+  lint:
+    docker:
+      - image: theya/cci-demo-docker-primary:0.0.1
+    steps:
+      - checkout
+      - run:
+          name: "Lint"
+          command: "flake8" 
+
+workflows:
+  workflow:
+    jobs:
+      - lint
+      - test
