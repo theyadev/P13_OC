@@ -39,7 +39,7 @@ jobs:
           name: "Push application Docker image"
           command: |
             if [ "${CIRCLE_BRANCH}" == "tests" ]; then
-              echo $DOCKERHUB_PASSWORD | docker login -u $DOCKERHUB_USERNAME —p $DOCKERHUB_PASSWORD
+              echo $DOCKERHUB_PASSWORD | docker login -u "$DOCKERHUB_USERNAME" —p "$DOCKERHUB_PASSWORD"
               docker tag $IMAGE_NAME "${ECR_ENDPOINT}/cci-demo-docker-primary:${CIRCLE_SHA1}"
               docker push "${ECR_ENDPOINT}/cci-demo-docker-primary:${CIRCLE_SHA1}"
             fi
