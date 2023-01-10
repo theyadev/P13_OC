@@ -4,8 +4,7 @@ executors:
  docker-publisher: 
     environment:
         IMAGE_NAME: theya/cci-demo-docker-primary
-    docker:
-        — image: circleci/node:latest
+    docker: circleci/node:latest
 
 
 jobs:
