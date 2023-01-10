@@ -6,9 +6,7 @@ executors:
         IMAGE_NAME: theya/cci-demo-docker-primary
     docker:
         — image: circleci/node:latest
-    auth:
-        username: $DOCKERHUB_USERNAME
-        password: $DOCKERHUB_PASSWORD
+
 
 jobs:
   test:
