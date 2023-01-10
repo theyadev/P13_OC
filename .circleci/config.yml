@@ -18,12 +18,15 @@ jobs:
           name: "Lint"
           command: "flake8" 
   dockerize:
-    working_directory: ./
+    working_directory: ./P13_OC
     docker:
       - image: docker:17.05.0-ce-git
     steps:
       - checkout
       - setup_remote_docker
+      - run:
+          name: "Test"
+          command: "ls"
       - run:
           name: "Build"
           command: "docker build . --cache-from=cci-demo-docker-primary -t cci-demo-docker-primary"
