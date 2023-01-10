@@ -17,9 +17,27 @@ jobs:
       - run:
           name: "Lint"
           command: "flake8" 
+  dockerize:
+    docker:
+      - image: theya/cci-demo-docker-primary:0.0.1
+    steps:
+      - checkout
+      - run:
+          name: "Build"
+          command: "docker build . --cache-from=app -t app"
+      - deploy:
+          name: "Push application Docker image"
+          command: |
+            if [ "${CIRCLE_BRANCH}" == "master" ]; then
+              login="$(aws ecr get-login)"
+              ${login}
+              docker tag app "${ECR_ENDPOINT}/app:${CIRCLE_SHA1}"
+              docker push "${ECR_ENDPOINT}/app:${CIRCLE_SHA1}"
+            fi
 
 workflows:
   workflow:
     jobs:
       - lint
       - test
+      - dockerize
