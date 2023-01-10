@@ -4,8 +4,6 @@ executors:
  docker-publisher: 
     environment:
         IMAGE_NAME: theya/cci-demo-docker-primary
-    docker: circleci/node:latest
-
 
 jobs:
   test:
@@ -26,6 +24,8 @@ jobs:
           command: "flake8" 
   dockerize:
     executor: docker-publisher
+    docker:
+      - image: circleci/node:latest
     steps:
       - checkout
       - setup_remote_docker
