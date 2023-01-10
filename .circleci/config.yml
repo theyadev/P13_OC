@@ -18,10 +18,10 @@ jobs:
           command: "docker build . -t $IMAGE_NAME"
       - run:
           name: "Lint"
-          command: "flake8"
+          command: "docker run $IMAGE_NAME flake8"
       - run:
           name: "Tests"
-          command: "python manage.py test"
+          command: "docker run $IMAGE_NAME python manage.py test"
       - deploy:
           name: "Push application Docker image"
           command: |
