@@ -1,5 +1,15 @@
 version: 2.1
 
+executors:
+ docker-publisher: 
+    environment:
+        IMAGE_NAME: theya/cci-demo-docker-primary
+    docker:
+        — image: circleci/node:latest
+    auth:
+        username: $DOCKERHUB_USERNAME
+        password: $DOCKERHUB_PASSWORD
+
 jobs:
   test:
     docker:
@@ -18,9 +28,7 @@ jobs:
           name: "Lint"
           command: "flake8" 
   dockerize:
-    working_directory: ./P13_OC
-    docker:
-      - image: docker:17.05.0-ce-git
+    executor: docker-publisher
     steps:
       - checkout
       - setup_remote_docker
@@ -29,14 +37,13 @@ jobs:
           command: "ls"
       - run:
           name: "Build"
-          command: "docker build . --cache-from=cci-demo-docker-primary -t cci-demo-docker-primary"
+          command: "docker build . -t $IMAGE_NAME"
       - deploy:
           name: "Push application Docker image"
           command: |
             if [ "${CIRCLE_BRANCH}" == "master" ]; then
-              login="$(aws ecr get-login)"
-              ${login}
-              docker tag cci-demo-docker-primary "${ECR_ENDPOINT}/cci-demo-docker-primary:${CIRCLE_SHA1}"
+              echo “$DOCKERHUB_PASSWORD” | docker login -u “$DOCKERHUB_USERNAME” — password-stdin
+              docker tag $IMAGE_NAME "${ECR_ENDPOINT}/cci-demo-docker-primary:${CIRCLE_SHA1}"
               docker push "${ECR_ENDPOINT}/cci-demo-docker-primary:${CIRCLE_SHA1}"
             fi
 
