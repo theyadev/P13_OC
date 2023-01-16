@@ -1,12 +1,7 @@
 version: 2.1
 
-executors:
-  docker-publisher:
-    environment:
-      IMAGE_NAME: theya/cci-demo-docker-primary
-
 jobs:
-  build-and-test:
+  lint-and-test:
     docker:
       - image: cimg/python:3.10.2
     steps:
@@ -34,7 +29,6 @@ jobs:
             . env/bin/activate
             python manage.py test
   dockerize:
-    executor: docker-publisher
     docker:
       - image: cimg/python:3.10.2
     steps:
@@ -44,18 +38,18 @@ jobs:
           name: Dockerize
           command: |
             echo "$DOCKERHUB_PASSWORD" | docker login --username $DOCKERHUB_USERNAME --password-stdin
-            docker build -t $IMAGE_NAME .
-            docker tag $IMAGE_NAME "${IMAGE_NAME}:${CIRCLE_SHA1}"
+            docker build -t $DOCKERHUB_IMAGE_NAME .
+            docker tag $DOCKERHUB_IMAGE_NAME "${DOCKERHUB_IMAGE_NAME}:${CIRCLE_SHA1}"
             docker push "${IMAGE_NAME}:${CIRCLE_SHA1}"
 
 workflows:
   main:
     jobs:
-      - build-and-test
+      - lint-and-test
       - dockerize:
           context: Openclassrooms
           requires:
-            - build-and-test
+            - lint-and-test
           filters:
             branches:
               only:

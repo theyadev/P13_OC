@@ -75,3 +75,41 @@ Utilisation de PowerShell, comme ci-dessus sauf :
 
 - Pour activer l'environnement virtuel, `.\env\Scripts\Activate.ps1` 
 - Remplacer `which <my-command>` par `(Get-Command <my-command>).Path`
+
+
+<a name="env"></a>
+
+## Environment variables
+Copy and paste `.env.example` in a file called `.env` and fill the corresponding variables to yours
+
+## Docker
+- Download [Docker](https://docs.docker.com/get-docker/)
+
+### Build
+- Setup environmentvariables (see [Environment variables](#env))
+- Build image `docker build -t <image-name> .`
+- Use `docker run --rm -p 8080:8080 --env-file .env <image-name>`, use the same image-name as before
+- Go to http://localhost:8080/
+
+
+### Pull
+- Find your desired tag at: https://hub.docker.com/repository/docker/theya/cci-demo-docker-primary/tag
+- Use `docker run --rm -p 8080:8080 theya/cci-demo-docker-primary:<image-tag>`
+- Find the website at http://localhost:8080/
+
+# Deployment
+
+## Prerequisites
+You'll need:
+
+- [GitHub](https://github.com/)
+- [CircleCI](https://circleci.com)
+- [Docker](https://www.docker.com)
+- [Heroku](https://www.heroku.com)
+- [Sentry](https://sentry.io/welcome/)
+
+# CircleCI Environment variables
+Here's all the variables needed for the pipeline to be functionnal
+- DOCKERHUB_USERNAME
+- DOCKERHUB_PASSWORD
+- DOCKERHUB_IMAGE_NAME (ex: username/oc_lettings_site)
