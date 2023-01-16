@@ -52,7 +52,7 @@ workflows:
   main:
     jobs:
       - build-and-test
-      - containerize:
+      - dockerize:
           context: Openclassrooms
           requires:
             - build-and-test
