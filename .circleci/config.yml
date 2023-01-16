@@ -40,7 +40,7 @@ jobs:
             echo "$DOCKERHUB_PASSWORD" | docker login --username $DOCKERHUB_USERNAME --password-stdin
             docker build -t $DOCKERHUB_IMAGE_NAME .
             docker tag $DOCKERHUB_IMAGE_NAME "${DOCKERHUB_IMAGE_NAME}:${CIRCLE_SHA1}"
-            docker push "${IMAGE_NAME}:${CIRCLE_SHA1}"
+            docker push "${DOCKERHUB_IMAGE_NAME}:${CIRCLE_SHA1}"
 
 workflows:
   main:
