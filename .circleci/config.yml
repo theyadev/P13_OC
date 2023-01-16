@@ -6,33 +6,57 @@ executors:
       IMAGE_NAME: theya/cci-demo-docker-primary
 
 jobs:
-  main:
+  build-and-test:
+    docker:
+      - image: cimg/python:3.10.2
+    steps:
+      - checkout
+      - restore_cache:
+          key: deps1-{{ .Branch }}-{{ checksum "requirements.txt" }}
+      - run:
+          name: Initialize environement
+          command: |
+            python -m venv env
+            . env/bin/activate
+            pip install -r requirements.txt
+      - save_cache:
+          key: deps1-{{ .Branch }}-{{ checksum "requirements.txt" }}
+          paths:
+            - ".env"
+      - run:
+          name: Run Lint
+          command: |
+            . env/bin/activate
+            flake8
+      - run:
+          name: Run Tests
+          command: |
+            . env/bin/activate
+            python manage.py test
+  dockerize:
     executor: docker-publisher
     docker:
-      - image: circleci/node:latest
+      - image: cimg/python:3.10.2
     steps:
       - checkout
       - setup_remote_docker
       - run:
-          name: "Build"
-          command: "docker build . -t $IMAGE_NAME"
-      - run:
-          name: "Lint"
-          command: "docker run $IMAGE_NAME flake8"
-      - run:
-          name: "Tests"
-          command: "docker run $IMAGE_NAME python manage.py test"
-      - deploy:
-          name: "Push application Docker image"
+          name: Dockerize
           command: |
-            if [ "${CIRCLE_BRANCH}" == "master" ]; then
-              echo $DOCKERHUB_PASSWORD | docker login -u $DOCKERHUB_USERNAME --password-stdin
-              docker tag $IMAGE_NAME "${IMAGE_NAME}:${CIRCLE_SHA1}"
-              docker push "${IMAGE_NAME}:${CIRCLE_SHA1}"
-            fi
+            echo "$DOCKERHUB_PASSWORD" | docker login --username $DOCKERHUB_USERNAME --password-stdin
+            docker build -t $IMAGE_NAME .
+            docker tag $IMAGE_NAME "${IMAGE_NAME}:${CIRCLE_SHA1}"
+            docker push "${IMAGE_NAME}:${CIRCLE_SHA1}"
 
 workflows:
-  workflow:
+  main:
     jobs:
-      - main:
+      - build-and-test
+      - containerize:
           context: Openclassrooms
+          requires:
+            - build-and-test
+          filters:
+            branches:
+              only:
+                - master
