@@ -41,6 +41,23 @@ jobs:
             docker build -t $DOCKERHUB_IMAGE_NAME .
             docker tag $DOCKERHUB_IMAGE_NAME "${DOCKERHUB_IMAGE_NAME}:${CIRCLE_SHA1}"
             docker push "${DOCKERHUB_IMAGE_NAME}:${CIRCLE_SHA1}"
+  deploy:
+    machine:
+      image: ubuntu-2004:current
+    resource_class: medium
+    steps:
+      - checkout
+      - run:
+          name: Deploy Docker image to Heroku
+          command: |
+            sudo curl https://cli-assets.heroku.com/install.sh | sh
+            HEROKU_APP=${HEROKU_API_KEY} heroku container:login
+            HEROKU_APP=${HEROKU_API_KEY} heroku config:set DJANGO_SECRET_KEY=$DJANGO_SECRET_KEY -a $HEROKU_APP_NAME
+            HEROKU_APP=${HEROKU_API_KEY} heroku config:set SENTRY_DSN=$SENTRY_DSN -a $HEROKU_APP_NAME
+            HEROKU_APP=${HEROKU_API_KEY} heroku config:set DEBUG=0 -a $HEROKU_APP_NAME
+            HEROKU_APP=${HEROKU_API_KEY} heroku container:push -a $HEROKU_APP_NAME web
+            HEROKU_APP=${HEROKU_API_KEY} heroku container:release -a $HEROKU_APP_NAME web
+            HEROKU_APP=${HEROKU_API_KEY} heroku run python manage.py migrate -a $HEROKU_APP_NAME
 
 workflows:
   main:
@@ -50,6 +67,15 @@ workflows:
           context: Openclassrooms
           requires:
             - lint-and-test
+          filters:
+            branches:
+              only:
+                - master
+      - deploy:
+          context: Openclassrooms
+          requires:
+            - lint-and-test
+            - dockerize
           filters:
             branches:
               only:
