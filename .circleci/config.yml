@@ -52,6 +52,7 @@ jobs:
           command: |
             sudo curl https://cli-assets.heroku.com/install.sh | sh
             HEROKU_APP=${HEROKU_API_KEY} heroku container:login
+            # HEROKU_APP=${HEROKU_API_KEY} heroku apps:create $HEROKU_APP_NAME --region eu --addons=heroku-postgresql
             HEROKU_APP=${HEROKU_API_KEY} heroku config:set DJANGO_SECRET_KEY=$DJANGO_SECRET_KEY -a $HEROKU_APP_NAME
             HEROKU_APP=${HEROKU_API_KEY} heroku config:set SENTRY_DSN=$SENTRY_DSN -a $HEROKU_APP_NAME
             HEROKU_APP=${HEROKU_API_KEY} heroku config:set DEBUG=0 -a $HEROKU_APP_NAME
