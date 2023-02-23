@@ -88,14 +88,14 @@ Copy and paste `.env.example` in a file called `.env` and fill the corresponding
 ### Build
 - Setup environmentvariables (see [Environment variables](#env))
 - Build image `docker build -t <image-name> .`
-- Use `docker run --rm -p 8080:8080 --env-file .env <image-name>`, use the same image-name as before
-- Go to http://localhost:8080/
+- Use `docker run --rm -p 8000:8000 --env-file .env <image-name>`, use the same image-name as before
+- Go to http://localhost:8000/
 
 
 ### Pull
-- Find your desired tag at: https://hub.docker.com/repository/docker/theya/cci-demo-docker-primary/tag
-- Use `docker run --rm -p 8080:8080 theya/cci-demo-docker-primary:<image-tag>`
-- Find the website at http://localhost:8080/
+- Find your desired tag at: https://hub.docker.com/repository/docker/theya/cci-demo-docker-primary/tags
+- Use `docker run --rm -p 8000:8000 theya/cci-demo-docker-primary:<image-tag>`
+- Find the website at http://localhost:8000/
 
 # Deployment
 
@@ -113,3 +113,7 @@ Here's all the variables needed for the pipeline to be functionnal
 - DOCKERHUB_USERNAME
 - DOCKERHUB_PASSWORD
 - DOCKERHUB_IMAGE_NAME (ex: username/oc_lettings_site)
+- DJANGO_SECRET_KEY
+- HEROKU_API_KEY
+- HEROKU_APP_NAME
+- SENTRY_DSN
